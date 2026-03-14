@@ -1756,6 +1756,29 @@
           <span class="amt" onclick="selectAmt(this,'501')">₹501</span>
         </div>
 
+
+        <!-- Payment instruction box -->
+        <div id="payInstructBox" style="display:none;margin-bottom:14px;background:rgba(80,200,120,0.1);border:1px solid rgba(80,200,120,0.4);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:0.75rem;color:#50c878;font-weight:600;margin-bottom:8px;">✅ Amount Selected: <span id="payAmtDisplay" style="font-family:'Cinzel Decorative',cursive;font-size:1rem;color:var(--gold)"></span></div>
+
+          <!-- Mobile message -->
+          <div id="payMobileMsg" style="display:none;">
+            <div style="font-size:0.8rem;color:var(--parchment);line-height:1.7;">Opening UPI app... यदि नहीं खुला तो QR scan करें।</div>
+          </div>
+
+          <!-- Desktop message -->
+          <div id="payDesktopMsg" style="display:none;">
+            <div style="font-size:0.78rem;color:var(--parchment);line-height:1.8;margin-bottom:10px;">
+              📱 <strong>Mobile এ pay করুন:</strong> নিচের QR scan করুন অথবা UPI ID copy করুন<br>
+              💻 <strong>Desktop এ:</strong> UPI ID copy করে আপনার phone এ GPay/PhonePe open করুন
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+              <button onclick="copyUPI()" style="padding:8px 16px;background:rgba(212,160,23,0.2);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.75rem;cursor:pointer;font-family:'Cinzel',serif;">📋 Copy UPI ID</button>
+              <a href="https://pay.google.com/intl/en_in/about/" target="_blank" style="padding:8px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:var(--silver);font-size:0.75rem;text-decoration:none;display:flex;align-items:center;">📲 Open GPay Web</a>
+            </div>
+          </div>
+        </div>
+
         <p class="sup-note">
           JyotiDarshan is completely free to use. If this app has been helpful to you,
           a small contribution helps the developer maintain and improve it. 🙏
@@ -2936,8 +2959,6 @@ function buildPredictions() {
 
   const profile = lagnaProfiles[li] || lagnaProfiles[0];
 
-  const lrLocal = rashiName(li);
-  const lordLocal = planetName(lagnaLord);
   const predAreas = [
     {icon:'💼', title:'Career & Finance', text: profile.career},
     {icon:'❤️', title:'Love & Relationships', text: profile.love},
@@ -4226,12 +4247,32 @@ function copyUPI() {
 }
 
 function selectAmt(el, amt) {
-  document.querySelectorAll('.amt').forEach(a => a.style.background = '');
+  document.querySelectorAll('.amt').forEach(a => {
+    a.style.background = '';
+    a.style.borderColor = '';
+  });
   el.style.background = 'rgba(212,160,23,0.3)';
   el.style.borderColor = 'var(--gold)';
-  // Open UPI deeplink
+
+  // Try UPI deeplink (works on mobile)
   const upiLink = `upi://pay?pa=9830055441@kotak811&pn=Asit+Kumar+Sarkar&am=${amt}&cu=INR&tn=JyotiDarshan+Support`;
-  window.location.href = upiLink;
+
+  // Show pay instruction box
+  const payBox = document.getElementById('payInstructBox');
+  if (payBox) {
+    payBox.style.display = 'block';
+    document.getElementById('payAmtDisplay').textContent = '₹' + amt;
+    // On mobile this will open UPI app, on desktop show instructions
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+      setTimeout(() => { window.location.href = upiLink; }, 200);
+      document.getElementById('payMobileMsg').style.display = 'block';
+      document.getElementById('payDesktopMsg').style.display = 'none';
+    } else {
+      document.getElementById('payMobileMsg').style.display = 'none';
+      document.getElementById('payDesktopMsg').style.display = 'block';
+    }
+  }
 }
 
 </script>
