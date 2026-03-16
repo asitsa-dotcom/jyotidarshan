@@ -4276,5 +4276,405 @@ function selectAmt(el, amt) {
 }
 
 </script>
+
+<!-- ████████████████████████████████████████████████
+     ██   জ্যোতিষ গুরু — AI CHATBOT WIDGET        ██
+     ████████████████████████████████████████████████ -->
+<style>
+#jg-fab {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  z-index: 9999;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffd700, #d4a017 55%, #8b5e00);
+  border: 2px solid rgba(255,215,0,0.6);
+  box-shadow: 0 0 20px rgba(212,160,23,0.7), 0 0 50px rgba(212,160,23,0.3), 0 4px 20px rgba(0,0,0,0.5);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: jgFabPulse 3s ease-in-out infinite;
+  user-select: none;
+}
+#jg-fab:hover { transform: scale(1.12); box-shadow: 0 0 35px rgba(255,215,0,1), 0 0 70px rgba(255,153,51,0.4), 0 6px 24px rgba(0,0,0,0.5); }
+@keyframes jgFabPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(212,160,23,0.7), 0 0 50px rgba(212,160,23,0.3), 0 4px 20px rgba(0,0,0,0.5); }
+  50%      { box-shadow: 0 0 38px rgba(255,215,0,1),   0 0 85px rgba(255,153,51,0.5), 0 4px 20px rgba(0,0,0,0.5); }
+}
+#jg-window {
+  position: fixed;
+  bottom: 104px; right: 28px;
+  z-index: 9998;
+  width: 385px;
+  max-width: calc(100vw - 40px);
+  height: 590px;
+  max-height: calc(100vh - 130px);
+  background: linear-gradient(160deg, #0d0825 0%, #1a0d3a 50%, #0f1a3d 100%);
+  border: 1px solid rgba(212,160,23,0.45);
+  border-radius: 18px;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.7), 0 0 40px rgba(212,160,23,0.15), inset 0 1px 0 rgba(255,215,0,0.15);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.85) translateY(30px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+}
+#jg-window.jgOpen { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+.jg-top-bar { height: 3px; background: linear-gradient(90deg, transparent, #ffd700 30%, #ff9933 50%, #ffd700 70%, transparent); opacity: 0.7; flex-shrink: 0; }
+#jg-header {
+  padding: 13px 16px 11px;
+  background: linear-gradient(135deg, rgba(45,24,117,0.85), rgba(20,10,55,0.95));
+  border-bottom: 1px solid rgba(212,160,23,0.3);
+  display: flex; align-items: center; gap: 11px;
+  flex-shrink: 0;
+}
+.jg-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe066, #d4a017 55%, #5c3a00);
+  border: 2px solid rgba(255,215,0,0.5);
+  box-shadow: 0 0 15px rgba(212,160,23,0.6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  animation: jgAvatarGlow 3s ease-in-out infinite;
+}
+@keyframes jgAvatarGlow {
+  0%,100% { box-shadow: 0 0 12px rgba(212,160,23,0.6); }
+  50%      { box-shadow: 0 0 28px rgba(255,215,0,0.9), 0 0 45px rgba(255,153,51,0.4); }
+}
+.jg-hinfo { flex: 1; }
+.jg-name {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 0.88rem; font-weight: 700;
+  background: linear-gradient(135deg, #ffd700, #ff9933);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 1.5px; line-height: 1.2;
+}
+.jg-status { font-family: 'Cinzel', serif; font-size: 0.58rem; color: rgba(255,215,0,0.55); letter-spacing: 1px; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+.jg-dot { width: 6px; height: 6px; border-radius: 50%; background: #50e890; box-shadow: 0 0 6px #50e890; animation: jgBlink 2s infinite; }
+@keyframes jgBlink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+#jg-close {
+  background: none; border: 1px solid rgba(212,160,23,0.3); color: rgba(212,160,23,0.7);
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+}
+#jg-close:hover { background: rgba(212,160,23,0.2); color: #ffd700; border-color: #ffd700; }
+#jg-msgs {
+  flex: 1; overflow-y: auto; padding: 14px 13px;
+  display: flex; flex-direction: column; gap: 11px;
+  scroll-behavior: smooth;
+}
+#jg-msgs::-webkit-scrollbar { width: 3px; }
+#jg-msgs::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.25); border-radius: 2px; }
+.jgM { display: flex; gap: 8px; animation: jgMsgIn 0.38s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes jgMsgIn { from{opacity:0;transform:translateY(12px) scale(0.95);} to{opacity:1;transform:translateY(0) scale(1);} }
+.jgM.u { flex-direction: row-reverse; }
+.jgMico {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe066, #d4a017 55%, #5c3a00);
+  border: 1px solid rgba(255,215,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; align-self: flex-end;
+}
+.jgM.u .jgMico { background: radial-gradient(circle at 35% 30%, #a78bfa, #6d28d9 55%, #2e1065); border-color: rgba(167,139,250,0.4); }
+.jgBub {
+  max-width: 79%; padding: 10px 13px; border-radius: 14px;
+  font-family: 'Noto Serif Bengali','Noto Serif Devanagari','Cinzel',serif;
+  font-size: 0.81rem; line-height: 1.65; color: #f8ead0;
+}
+.jgM.b .jgBub {
+  background: linear-gradient(135deg, rgba(45,24,117,0.6), rgba(20,10,55,0.82));
+  border: 1px solid rgba(212,160,23,0.25); border-bottom-left-radius: 4px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+}
+.jgM.u .jgBub {
+  background: linear-gradient(135deg, rgba(80,40,180,0.55), rgba(50,20,120,0.72));
+  border: 1px solid rgba(167,139,250,0.3); border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.3); text-align: right;
+}
+.jgTyp {
+  display: flex; align-items: center; gap: 5px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(45,24,117,0.5), rgba(20,10,55,0.7));
+  border: 1px solid rgba(212,160,23,0.2); border-radius: 14px; border-bottom-left-radius: 4px;
+  max-width: 68px;
+}
+.jgTd { width: 6px; height: 6px; border-radius: 50%; background: #d4a017; animation: jgBounce 1.2s infinite; }
+.jgTd:nth-child(2){animation-delay:0.2s;} .jgTd:nth-child(3){animation-delay:0.4s;}
+@keyframes jgBounce { 0%,80%,100%{transform:translateY(0);opacity:0.4;} 40%{transform:translateY(-6px);opacity:1;} }
+.jgSatBox {
+  background: linear-gradient(135deg, rgba(45,24,117,0.72), rgba(20,10,55,0.88));
+  border: 1px solid rgba(212,160,23,0.4); border-radius: 12px;
+  padding: 12px 14px; font-family: 'Cinzel',serif; font-size: 0.74rem;
+  color: #f0c040; text-align: center; animation: jgMsgIn 0.38s ease;
+}
+.jgSatBtns { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
+.jgSatBtn {
+  padding: 6px 16px; border-radius: 20px; cursor: pointer;
+  font-family: 'Cinzel',serif; font-size: 0.68rem; letter-spacing: 1px;
+  border: 1px solid; transition: all 0.22s;
+}
+.jgSatBtn.y { border-color: rgba(80,232,144,0.5); color: #50e890; background: rgba(80,232,144,0.08); }
+.jgSatBtn.y:hover { background: rgba(80,232,144,0.22); box-shadow: 0 0 10px rgba(80,232,144,0.3); }
+.jgSatBtn.n { border-color: rgba(212,160,23,0.4); color: #d4a017; background: rgba(212,160,23,0.08); }
+.jgSatBtn.n:hover { background: rgba(212,160,23,0.2); }
+.jgDakBox {
+  background: linear-gradient(135deg, rgba(100,60,0,0.45), rgba(45,24,117,0.75));
+  border: 1px solid rgba(255,153,51,0.5); border-radius: 12px;
+  padding: 14px 16px; text-align: center; animation: jgMsgIn 0.38s ease;
+}
+.jgDakTitle { font-family: 'Cinzel Decorative',cursive; font-size: 0.85rem; color: #ffd700; margin-bottom: 7px; }
+.jgDakText { font-family: 'Noto Serif Bengali',serif; font-size: 0.74rem; color: rgba(248,234,208,0.85); line-height: 1.55; }
+.jgDakBtn {
+  display: inline-block; margin-top: 11px; padding: 8px 22px;
+  background: linear-gradient(135deg, #d4a017, #ff9933);
+  color: #0d0825; border-radius: 20px; border: none; cursor: pointer;
+  font-family: 'Cinzel Decorative',cursive; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 1.5px; box-shadow: 0 0 14px rgba(212,160,23,0.5);
+  transition: all 0.22s;
+}
+.jgDakBtn:hover { transform: scale(1.06); box-shadow: 0 0 26px rgba(255,153,51,0.75); }
+#jg-bot-area {
+  padding: 9px 12px 13px;
+  background: rgba(10,5,30,0.85);
+  border-top: 1px solid rgba(212,160,23,0.2);
+  flex-shrink: 0;
+}
+.jgChips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+.jgChip {
+  padding: 4px 11px;
+  background: rgba(45,24,117,0.38); border: 1px solid rgba(212,160,23,0.28);
+  border-radius: 13px; color: rgba(240,192,64,0.82);
+  font-family: 'Cinzel',serif; font-size: 0.63rem; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.jgChip:hover { background: rgba(212,160,23,0.2); border-color: #d4a017; color: #ffd700; }
+.jgInputRow { display: flex; gap: 8px; align-items: flex-end; }
+#jg-inp {
+  flex: 1; background: rgba(0,0,0,0.52); border: 1px solid rgba(212,160,23,0.35);
+  color: #f8ead0; padding: 10px 14px; border-radius: 22px;
+  font-family: 'Noto Serif Bengali',serif; font-size: 0.81rem;
+  outline: none; resize: none; max-height: 100px; line-height: 1.4;
+  transition: border-color 0.3s; overflow-y: auto;
+}
+#jg-inp::placeholder { color: rgba(212,160,23,0.32); }
+#jg-inp:focus { border-color: rgba(212,160,23,0.72); box-shadow: 0 0 10px rgba(212,160,23,0.14); }
+#jg-snd {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #d4a017, #ff9933);
+  border: none; color: #0d0825; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 0 12px rgba(212,160,23,0.5);
+  transition: all 0.2s;
+}
+#jg-snd:hover { transform: scale(1.09); box-shadow: 0 0 22px rgba(255,153,51,0.75); }
+#jg-snd:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
+@media(max-width:430px){
+  #jg-window{ width:calc(100vw - 16px); right:8px; bottom:88px; height:calc(100vh - 108px); max-height:none; border-radius:14px; }
+  #jg-fab{ bottom:16px; right:16px; width:56px; height:56px; font-size:24px; }
+}
+</style>
+
+<!-- FAB -->
+<div id="jg-fab" onclick="jgToggle()" title="জ্যোতিষ গুরু — প্রশ্ন করুন">🪬</div>
+
+<!-- CHAT WINDOW -->
+<div id="jg-window">
+  <div class="jg-top-bar"></div>
+  <div id="jg-header">
+    <div class="jg-avatar">🔮</div>
+    <div class="jg-hinfo">
+      <div class="jg-name">জ্যোতিষ গুরু</div>
+      <div class="jg-status"><span class="jg-dot"></span>VEDIC ASTROLOGY ORACLE</div>
+    </div>
+    <button id="jg-close" onclick="jgToggle()">✕</button>
+  </div>
+  <div id="jg-msgs"></div>
+  <div id="jg-bot-area">
+    <div class="jgChips" id="jg-chips">
+      <span class="jgChip" onclick="jgChip(this)">🪐 আমার রাশি কী?</span>
+      <span class="jgChip" onclick="jgChip(this)">💎 শুভ রত্নপাথর</span>
+      <span class="jgChip" onclick="jgChip(this)">⭐ নক্ষত্র ফল</span>
+      <span class="jgChip" onclick="jgChip(this)">🔴 মঙ্গল দোষ</span>
+      <span class="jgChip" onclick="jgChip(this)">💑 বিবাহ যোগ</span>
+      <span class="jgChip" onclick="jgChip(this)">🌙 চন্দ্র দশা</span>
+    </div>
+    <div class="jgInputRow">
+      <textarea id="jg-inp" placeholder="জ্যোতিষ বিষয়ে যেকোনো প্রশ্ন করুন..." rows="1"
+        onkeydown="jgKey(event)" oninput="jgResize(this)"></textarea>
+      <button id="jg-snd" onclick="jgSend()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const GEMINI_KEY = 'AIzaSyBcc2XaKabjP7aVU0KJPoJkLxFvveNRMzM';
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+
+  const SYSTEM = `তুমি "জ্যোতিষ গুরু" — একজন অত্যন্ত অভিজ্ঞ ও জ্ঞানী বৈদিক জ্যোতিষাচার্য। তোমার জ্ঞান অপরিসীম।
+
+পরিচয়: তুমি একজন সিদ্ধহস্ত বৈদিক জ্যোতিষী। তোমার জ্ঞান: জন্মকুণ্ডলী, রাশি, নক্ষত্র, গ্রহ, দশা, অন্তর্দশা, যোগ, দোষ, রত্নপাথর, মুহূর্ত, বাস্তু, প্রশ্নকুণ্ডলী, আয়নাংশ, লগ্ন, ষোডশবর্গ, নবমাংশ, কালসর্প দোষ, মাঙ্গলিক দোষ, গ্রহ শান্তি, উপায়, পূজা, রুদ্রাক্ষ, পাণিগ্রহণ মুহূর্ত ইত্যাদি সমস্ত বৈদিক জ্যোতিষ বিষয়ে।
+
+ভাষা নীতি: ব্যবহারকারী যে ভাষায় কথা বলবে, তুমিও সেই ভাষায় উত্তর দেবে। বাংলা, হিন্দি, তামিল, তেলুগু, মারাঠি, গুজরাটি, কন্নড, মালয়ালম, পাঞ্জাবি, ইংরেজি — সব ভাষায় পারদর্শী। উত্তরে মাঝে মাঝে সংস্কৃত শ্লোক দিতে পারো।
+
+শৈলী: গুরুগম্ভীর, জ্ঞানগর্ভ কিন্তু সহজবোধ্য। উত্তরের শুরুতে "🙏 ওঁ" বা মঙ্গলবাচক শব্দ দাও। গ্রহ, নক্ষত্র বা রাশির প্রভাব উল্লেখ করো। সম্ভব হলে ব্যবহারিক উপায় বা প্রতিকার দাও।
+
+কঠোর নিয়ম: শুধুমাত্র জ্যোতিষ, মুহূর্ত, বাস্তু, ধর্মীয় আচার বিষয়ে উত্তর দেবে। ক্রিকেট, রাজনীতি, সিনেমা, প্রযুক্তি, শেয়ার বাজার বা অন্য বিষয়ে প্রশ্ন করলে বিনয়ের সাথে বলো: "প্রিয় জিজ্ঞাসু, এই বিষয়ে আমার জ্ঞান সীমাবদ্ধ। আমি কেবল বৈদিক জ্যোতিষের আলোকে পথ দেখাতে সক্ষম। 🙏" চিকিৎসা পরামর্শ দেবে না। ভবিষ্যৎ ১০০% নিশ্চিত করে বলবে না, সম্ভাবনা ও গ্রহের সংকেত বলবে।`;
+
+  let isOpen=false, busy=false, satWait=false;
+  let history=[], msgCount=0, botCount=0;
+
+  window.jgToggle=function(){
+    isOpen=!isOpen;
+    document.getElementById('jg-window').classList.toggle('jgOpen',isOpen);
+    if(isOpen && msgCount===0) setTimeout(welcome,320);
+  };
+
+  function welcome(){
+    bot(`🙏 **ওঁ নমো ভগবতে**\n\nআমি **জ্যোতিষ গুরু** — এই দিব্য জ্যোতিষ জগতে আপনাকে স্বাগত। রাশি, কুণ্ডলী, গ্রহদশা, রত্নপাথর, বিবাহ যোগ — যেকোনো প্রশ্ন করুন। আমি যেকোনো ভারতীয় ভাষায় উত্তর দিতে সক্ষম। 🪐✨`);
+  }
+
+  window.jgResize=function(el){
+    el.style.height='auto';
+    el.style.height=Math.min(el.scrollHeight,100)+'px';
+  };
+  window.jgKey=function(e){
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();jgSend();}
+  };
+  window.jgChip=function(el){
+    document.getElementById('jg-inp').value=el.textContent.replace(/^[🪐💎⭐🔴💑🌙]\s/,'');
+    jgSend();
+  };
+
+  window.jgSend=async function(){
+    const inp=document.getElementById('jg-inp');
+    const txt=inp.value.trim();
+    if(!txt||busy||satWait) return;
+    inp.value=''; inp.style.height='auto';
+    user(txt);
+    history.push({role:'user',parts:[{text:txt}]});
+    msgCount++;
+    await callGemini();
+  };
+
+  function user(t){
+    const el=document.createElement('div');
+    el.className='jgM u';
+    el.innerHTML=`<div class="jgBub">${esc(t)}</div><div class="jgMico">🙋</div>`;
+    app(el);
+  }
+
+  function bot(t){
+    const el=document.createElement('div');
+    el.className='jgM b';
+    el.innerHTML=`<div class="jgMico">🔮</div><div class="jgBub">${fmt(t)}</div>`;
+    app(el); msgCount++; botCount++;
+  }
+
+  async function callGemini(){
+    busy=true;
+    document.getElementById('jg-snd').disabled=true;
+
+    // typing indicator
+    const trow=document.createElement('div');
+    trow.className='jgM b'; trow.id='jgTypRow';
+    trow.innerHTML=`<div class="jgMico">🔮</div><div class="jgTyp"><span class="jgTd"></span><span class="jgTd"></span><span class="jgTd"></span></div>`;
+    app(trow);
+
+    try{
+      const body={
+        system_instruction:{parts:[{text:SYSTEM}]},
+        contents: history,
+        generationConfig:{maxOutputTokens:900,temperature:0.7}
+      };
+      const res=await fetch(GEMINI_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+      const data=await res.json();
+      document.getElementById('jgTypRow')?.remove();
+
+      if(data.candidates&&data.candidates[0]){
+        const reply=data.candidates[0].content.parts[0].text;
+        history.push({role:'model',parts:[{text:reply}]});
+        bot(reply);
+        if(botCount>0 && botCount%2===0) setTimeout(showSat,700);
+      } else {
+        bot('🙏 ক্ষমা করুন, এই মুহূর্তে সংযোগে সমস্যা হচ্ছে। একটু পরে আবার চেষ্টা করুন।');
+      }
+    }catch(e){
+      document.getElementById('jgTypRow')?.remove();
+      bot('⚠️ গুরুজি এই মুহূর্তে ধ্যানমগ্ন। পুনরায় চেষ্টা করুন।');
+    }
+    busy=false;
+    document.getElementById('jg-snd').disabled=false;
+  }
+
+  function showSat(){
+    satWait=true;
+    const el=document.createElement('div');
+    el.className='jgSatBox'; el.id='jgSat';
+    el.innerHTML=`🌟 গুরুজির পরামর্শে কি আপনি সন্তুষ্ট হয়েছেন?
+      <div class="jgSatBtns">
+        <button class="jgSatBtn y" onclick="jgSatAns(true)">✅ হ্যাঁ, সন্তুষ্ট</button>
+        <button class="jgSatBtn n" onclick="jgSatAns(false)">🔄 আরো জানতে চাই</button>
+      </div>`;
+    app(el);
+  }
+
+  window.jgSatAns=function(yes){
+    document.getElementById('jgSat')?.remove();
+    satWait=false;
+    if(yes){ showDak(); }
+    else { bot('🙏 নিশ্চয়ই! আপনার যা জানার আছে নির্দ্বিধায় জিজ্ঞাসা করুন। আমি সর্বদা প্রস্তুত। 🌟'); }
+  };
+
+  function showDak(){
+    const el=document.createElement('div');
+    el.className='jgDakBox';
+    el.innerHTML=`<div class="jgDakTitle">🙏 দক্ষিণা নিবেদন</div>
+      <div class="jgDakText">গুরুজির সেবায় সন্তুষ্ট হয়েছেন জেনে আনন্দিত। আপনি ইচ্ছা করলে এই অ্যাপটির উন্নয়নে Developer-কে দক্ষিণা প্রদান করে সহায়তা করতে পারেন।</div>
+      <button class="jgDakBtn" onclick="jgDak()">💛 দক্ষিণা দিন</button>`;
+    app(el);
+  }
+
+  window.jgDak=function(){
+    // find and click the Support/Developer nav tab
+    let found=false;
+    document.querySelectorAll('.nav-tab').forEach(tab=>{
+      const t=tab.textContent.toLowerCase();
+      if(t.includes('support')||t.includes('developer')||t.includes('দক্ষিণা')||t.includes('donate')){
+        tab.click(); found=true;
+      }
+    });
+    if(!found){
+      // try showSection function from main app
+      if(typeof showSection==='function') showSection('support');
+    }
+    jgToggle();
+  };
+
+  function app(el){
+    const box=document.getElementById('jg-msgs');
+    box.appendChild(el);
+    box.scrollTop=box.scrollHeight;
+  }
+
+  function fmt(t){
+    return esc(t)
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ffd700">$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em style="color:#f0c040">$1</em>')
+      .replace(/\n/g,'<br>');
+  }
+  function esc(t){
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
+<!-- ████ END JYOTISH GURU CHATBOT ████ -->
+
 </body>
 </html>
