@@ -4676,7 +4676,7 @@ function selectAmt(el, amt) {
   window.jgResize=function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';};
   window.jgKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();jgSend();}};
   window.jgChip=function(el){
-    document.getElementById('jgInp').value=el.textContent.replace(/^[^0980-09FF0900-097F0041-007Aa-z]+/,'').trim();
+    var _t=el.textContent.trim(); document.getElementById('jgInp').value=_t.indexOf(' ')>-1?_t.substring(_t.indexOf(' ')+1):_t;
     jgSend();
   };
 
