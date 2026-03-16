@@ -4277,222 +4277,348 @@ function selectAmt(el, amt) {
 
 </script>
 
-<!-- ████████████████████████████████████████████████
-     ██   জ্যোতিষ গুরু — AI CHATBOT WIDGET        ██
-     ████████████████████████████████████████████████ -->
+<!-- ═══════════════════════════════════════
+   জ্যোতিষ গুরু  AI CHATBOT  v3
+═══════════════════════════════════════ -->
 <style>
-#jg-fab {
-  position: fixed;
-  bottom: 28px; right: 28px;
-  z-index: 9999;
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffd700, #d4a017 55%, #8b5e00);
-  border: 2px solid rgba(255,215,0,0.6);
-  box-shadow: 0 0 20px rgba(212,160,23,0.7), 0 0 50px rgba(212,160,23,0.3), 0 4px 20px rgba(0,0,0,0.5);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  animation: jgFabPulse 3s ease-in-out infinite;
-  user-select: none;
+/* ── FAB: beautiful guru face ── */
+#jgFab {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  width:72px; height:72px; border-radius:50%; cursor:pointer;
+  border:none; background:none; padding:0;
+  filter: drop-shadow(0 0 14px rgba(212,160,23,0.85)) drop-shadow(0 0 30px rgba(255,153,51,0.4));
+  transition:transform 0.3s, filter 0.3s;
+  animation:jgFabFloat 4s ease-in-out infinite;
 }
-#jg-fab:hover { transform: scale(1.12); box-shadow: 0 0 35px rgba(255,215,0,1), 0 0 70px rgba(255,153,51,0.4), 0 6px 24px rgba(0,0,0,0.5); }
-@keyframes jgFabPulse {
-  0%,100% { box-shadow: 0 0 20px rgba(212,160,23,0.7), 0 0 50px rgba(212,160,23,0.3), 0 4px 20px rgba(0,0,0,0.5); }
-  50%      { box-shadow: 0 0 38px rgba(255,215,0,1),   0 0 85px rgba(255,153,51,0.5), 0 4px 20px rgba(0,0,0,0.5); }
+#jgFab:hover { transform:scale(1.1); filter: drop-shadow(0 0 22px rgba(255,215,0,1)) drop-shadow(0 0 50px rgba(255,153,51,0.6)); }
+@keyframes jgFabFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+#jgFab svg { width:72px; height:72px; }
+
+/* ── Notification badge ── */
+#jgBadge {
+  position:fixed; bottom:82px; right:20px; z-index:10000;
+  background:linear-gradient(135deg,#d4a017,#ff9933);
+  color:#0d0825; font-family:'Cinzel',serif; font-size:0.6rem;
+  font-weight:700; letter-spacing:0.5px; padding:4px 9px;
+  border-radius:10px; white-space:nowrap;
+  box-shadow:0 4px 12px rgba(212,160,23,0.5);
+  animation:jgBadgeBounce 2s ease-in-out infinite;
+  pointer-events:none;
 }
-#jg-window {
-  position: fixed;
-  bottom: 104px; right: 28px;
-  z-index: 9998;
-  width: 385px;
-  max-width: calc(100vw - 40px);
-  height: 590px;
-  max-height: calc(100vh - 130px);
-  background: linear-gradient(160deg, #0d0825 0%, #1a0d3a 50%, #0f1a3d 100%);
-  border: 1px solid rgba(212,160,23,0.45);
-  border-radius: 18px;
-  box-shadow: 0 20px 80px rgba(0,0,0,0.7), 0 0 40px rgba(212,160,23,0.15), inset 0 1px 0 rgba(255,215,0,0.15);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  transform: scale(0.85) translateY(30px);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+@keyframes jgBadgeBounce { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-3px) scale(1.04);} }
+#jgBadge.hide { display:none; }
+
+/* ── Chat window ── */
+#jgWin {
+  position:fixed; bottom:110px; right:20px; z-index:9998;
+  width:390px; max-width:calc(100vw - 30px);
+  height:600px; max-height:calc(100vh - 125px);
+  background:linear-gradient(160deg,#080520 0%,#150d38 45%,#0c1535 100%);
+  border:1px solid rgba(212,160,23,0.4);
+  border-radius:20px;
+  box-shadow:0 25px 80px rgba(0,0,0,0.75), 0 0 50px rgba(212,160,23,0.12), inset 0 1px 0 rgba(255,215,0,0.12);
+  display:flex; flex-direction:column; overflow:hidden;
+  transform:scale(0.88) translateY(28px); opacity:0; pointer-events:none;
+  transition:transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+  transform-origin: bottom right;
 }
-#jg-window.jgOpen { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
-.jg-top-bar { height: 3px; background: linear-gradient(90deg, transparent, #ffd700 30%, #ff9933 50%, #ffd700 70%, transparent); opacity: 0.7; flex-shrink: 0; }
-#jg-header {
-  padding: 13px 16px 11px;
-  background: linear-gradient(135deg, rgba(45,24,117,0.85), rgba(20,10,55,0.95));
-  border-bottom: 1px solid rgba(212,160,23,0.3);
-  display: flex; align-items: center; gap: 11px;
-  flex-shrink: 0;
+#jgWin.on { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+
+/* ── Gold top stripe ── */
+.jgStripe { height:3px; flex-shrink:0; background:linear-gradient(90deg,transparent,#ffd700 25%,#ff9933 50%,#ffd700 75%,transparent); }
+
+/* ── Header with guru face ── */
+#jgHead {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px 10px;
+  background:linear-gradient(135deg,rgba(40,20,100,0.92),rgba(15,8,45,0.97));
+  border-bottom:1px solid rgba(212,160,23,0.25);
+  flex-shrink:0; position:relative; overflow:hidden;
 }
-.jg-avatar {
-  width: 46px; height: 46px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe066, #d4a017 55%, #5c3a00);
-  border: 2px solid rgba(255,215,0,0.5);
-  box-shadow: 0 0 15px rgba(212,160,23,0.6);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
-  animation: jgAvatarGlow 3s ease-in-out infinite;
+#jgHead::before {
+  content:''; position:absolute; top:-30px; left:-30px;
+  width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle,rgba(212,160,23,0.08),transparent 70%);
+  pointer-events:none;
 }
-@keyframes jgAvatarGlow {
-  0%,100% { box-shadow: 0 0 12px rgba(212,160,23,0.6); }
-  50%      { box-shadow: 0 0 28px rgba(255,215,0,0.9), 0 0 45px rgba(255,153,51,0.4); }
+.jgHeadFace {
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  border:2px solid rgba(255,215,0,0.55);
+  box-shadow:0 0 16px rgba(212,160,23,0.6), 0 0 32px rgba(255,153,51,0.25);
+  animation:jgHeadGlow 3.5s ease-in-out infinite; overflow:hidden;
 }
-.jg-hinfo { flex: 1; }
-.jg-name {
-  font-family: 'Cinzel Decorative', cursive;
-  font-size: 0.88rem; font-weight: 700;
-  background: linear-gradient(135deg, #ffd700, #ff9933);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  letter-spacing: 1.5px; line-height: 1.2;
+@keyframes jgHeadGlow {
+  0%,100%{box-shadow:0 0 14px rgba(212,160,23,0.6),0 0 28px rgba(255,153,51,0.2);}
+  50%{box-shadow:0 0 26px rgba(255,215,0,0.9),0 0 50px rgba(255,153,51,0.45);}
 }
-.jg-status { font-family: 'Cinzel', serif; font-size: 0.58rem; color: rgba(255,215,0,0.55); letter-spacing: 1px; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
-.jg-dot { width: 6px; height: 6px; border-radius: 50%; background: #50e890; box-shadow: 0 0 6px #50e890; animation: jgBlink 2s infinite; }
-@keyframes jgBlink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
-#jg-close {
-  background: none; border: 1px solid rgba(212,160,23,0.3); color: rgba(212,160,23,0.7);
-  width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+.jgHeadInfo { flex:1; }
+.jgHName {
+  font-family:'Cinzel Decorative',cursive; font-size:0.92rem; font-weight:900;
+  background:linear-gradient(135deg,#ffd700 0%,#ffb300 40%,#ff9933 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:1.5px;
 }
-#jg-close:hover { background: rgba(212,160,23,0.2); color: #ffd700; border-color: #ffd700; }
-#jg-msgs {
-  flex: 1; overflow-y: auto; padding: 14px 13px;
-  display: flex; flex-direction: column; gap: 11px;
-  scroll-behavior: smooth;
+.jgHSub { font-family:'Cinzel',serif; font-size:0.58rem; color:rgba(255,215,0,0.5); letter-spacing:1.5px; margin-top:2px; }
+.jgHOnline { display:flex; align-items:center; gap:5px; margin-top:3px; font-family:'Cinzel',serif; font-size:0.55rem; color:rgba(80,232,144,0.7); letter-spacing:1px; }
+.jgGrnDot { width:6px; height:6px; border-radius:50%; background:#50e890; box-shadow:0 0 5px #50e890; animation:jgBlink 2.2s infinite; }
+@keyframes jgBlink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+#jgX {
+  background:none; border:1px solid rgba(212,160,23,0.28); color:rgba(212,160,23,0.6);
+  width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:13px;
+  display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0;
 }
-#jg-msgs::-webkit-scrollbar { width: 3px; }
-#jg-msgs::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.25); border-radius: 2px; }
-.jgM { display: flex; gap: 8px; animation: jgMsgIn 0.38s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes jgMsgIn { from{opacity:0;transform:translateY(12px) scale(0.95);} to{opacity:1;transform:translateY(0) scale(1);} }
-.jgM.u { flex-direction: row-reverse; }
-.jgMico {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe066, #d4a017 55%, #5c3a00);
-  border: 1px solid rgba(255,215,0,0.4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0; align-self: flex-end;
+#jgX:hover { background:rgba(212,160,23,0.18); color:#ffd700; border-color:#ffd700; }
+
+/* ── Messages ── */
+#jgMsgs {
+  flex:1; overflow-y:auto; padding:14px 13px;
+  display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth;
 }
-.jgM.u .jgMico { background: radial-gradient(circle at 35% 30%, #a78bfa, #6d28d9 55%, #2e1065); border-color: rgba(167,139,250,0.4); }
+#jgMsgs::-webkit-scrollbar{width:3px;}
+#jgMsgs::-webkit-scrollbar-thumb{background:rgba(212,160,23,0.22);border-radius:2px;}
+
+.jgRow { display:flex; gap:8px; animation:jgIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes jgIn{from{opacity:0;transform:translateY(14px) scale(0.94);}to{opacity:1;transform:none;}}
+.jgRow.u { flex-direction:row-reverse; }
+
+/* Bot avatar — small guru face */
+.jgAv {
+  width:32px; height:32px; border-radius:50%; flex-shrink:0; align-self:flex-end;
+  border:1.5px solid rgba(255,215,0,0.45);
+  box-shadow:0 0 8px rgba(212,160,23,0.4);
+  overflow:hidden;
+}
+.jgRow.u .jgAv { background:radial-gradient(circle at 40% 35%,#a78bfa,#6d28d9 60%,#2e1065); display:flex; align-items:center; justify-content:center; font-size:16px; }
+
 .jgBub {
-  max-width: 79%; padding: 10px 13px; border-radius: 14px;
-  font-family: 'Noto Serif Bengali','Noto Serif Devanagari','Cinzel',serif;
-  font-size: 0.81rem; line-height: 1.65; color: #f8ead0;
+  max-width:78%; padding:10px 13px; border-radius:15px;
+  font-family:'Noto Serif Bengali','Noto Serif Devanagari',serif;
+  font-size:0.82rem; line-height:1.7; color:#f8ead0;
 }
-.jgM.b .jgBub {
-  background: linear-gradient(135deg, rgba(45,24,117,0.6), rgba(20,10,55,0.82));
-  border: 1px solid rgba(212,160,23,0.25); border-bottom-left-radius: 4px;
-  box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+.jgRow.b .jgBub {
+  background:linear-gradient(135deg,rgba(42,22,110,0.62),rgba(16,8,50,0.85));
+  border:1px solid rgba(212,160,23,0.22); border-bottom-left-radius:4px;
+  box-shadow:0 3px 14px rgba(0,0,0,0.32);
 }
-.jgM.u .jgBub {
-  background: linear-gradient(135deg, rgba(80,40,180,0.55), rgba(50,20,120,0.72));
-  border: 1px solid rgba(167,139,250,0.3); border-bottom-right-radius: 4px;
-  box-shadow: 0 3px 15px rgba(0,0,0,0.3); text-align: right;
+.jgRow.u .jgBub {
+  background:linear-gradient(135deg,rgba(75,35,175,0.58),rgba(45,18,115,0.75));
+  border:1px solid rgba(167,139,250,0.28); border-bottom-right-radius:4px;
+  box-shadow:0 3px 14px rgba(0,0,0,0.32); text-align:right;
 }
-.jgTyp {
-  display: flex; align-items: center; gap: 5px;
-  padding: 10px 14px;
-  background: linear-gradient(135deg, rgba(45,24,117,0.5), rgba(20,10,55,0.7));
-  border: 1px solid rgba(212,160,23,0.2); border-radius: 14px; border-bottom-left-radius: 4px;
-  max-width: 68px;
+
+/* Typing */
+.jgTyping {
+  display:flex; align-items:center; gap:5px; padding:10px 14px;
+  background:linear-gradient(135deg,rgba(42,22,110,0.52),rgba(16,8,50,0.75));
+  border:1px solid rgba(212,160,23,0.18); border-radius:15px; border-bottom-left-radius:4px;
+  max-width:66px;
 }
-.jgTd { width: 6px; height: 6px; border-radius: 50%; background: #d4a017; animation: jgBounce 1.2s infinite; }
-.jgTd:nth-child(2){animation-delay:0.2s;} .jgTd:nth-child(3){animation-delay:0.4s;}
-@keyframes jgBounce { 0%,80%,100%{transform:translateY(0);opacity:0.4;} 40%{transform:translateY(-6px);opacity:1;} }
-.jgSatBox {
-  background: linear-gradient(135deg, rgba(45,24,117,0.72), rgba(20,10,55,0.88));
-  border: 1px solid rgba(212,160,23,0.4); border-radius: 12px;
-  padding: 12px 14px; font-family: 'Cinzel',serif; font-size: 0.74rem;
-  color: #f0c040; text-align: center; animation: jgMsgIn 0.38s ease;
+.jgDt { width:6px; height:6px; border-radius:50%; background:#d4a017; animation:jgBounce 1.2s infinite; }
+.jgDt:nth-child(2){animation-delay:0.22s;} .jgDt:nth-child(3){animation-delay:0.44s;}
+@keyframes jgBounce{0%,80%,100%{transform:translateY(0);opacity:0.35;}40%{transform:translateY(-7px);opacity:1;}}
+
+/* Satisfaction box */
+.jgSat {
+  background:linear-gradient(135deg,rgba(40,20,105,0.75),rgba(15,8,48,0.92));
+  border:1px solid rgba(212,160,23,0.38); border-radius:13px;
+  padding:13px 15px; font-family:'Cinzel',serif; font-size:0.73rem;
+  color:#f0c040; text-align:center; animation:jgIn 0.38s ease;
 }
-.jgSatBtns { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
-.jgSatBtn {
-  padding: 6px 16px; border-radius: 20px; cursor: pointer;
-  font-family: 'Cinzel',serif; font-size: 0.68rem; letter-spacing: 1px;
-  border: 1px solid; transition: all 0.22s;
+.jgSBtns { display:flex; gap:8px; margin-top:10px; justify-content:center; flex-wrap:wrap; }
+.jgSBtn {
+  padding:6px 15px; border-radius:18px; cursor:pointer;
+  font-family:'Cinzel',serif; font-size:0.67rem; letter-spacing:0.8px;
+  border:1px solid; transition:all 0.22s; background:none;
 }
-.jgSatBtn.y { border-color: rgba(80,232,144,0.5); color: #50e890; background: rgba(80,232,144,0.08); }
-.jgSatBtn.y:hover { background: rgba(80,232,144,0.22); box-shadow: 0 0 10px rgba(80,232,144,0.3); }
-.jgSatBtn.n { border-color: rgba(212,160,23,0.4); color: #d4a017; background: rgba(212,160,23,0.08); }
-.jgSatBtn.n:hover { background: rgba(212,160,23,0.2); }
-.jgDakBox {
-  background: linear-gradient(135deg, rgba(100,60,0,0.45), rgba(45,24,117,0.75));
-  border: 1px solid rgba(255,153,51,0.5); border-radius: 12px;
-  padding: 14px 16px; text-align: center; animation: jgMsgIn 0.38s ease;
+.jgSBtn.y{border-color:rgba(80,232,144,0.48);color:#50e890;}
+.jgSBtn.y:hover{background:rgba(80,232,144,0.18);box-shadow:0 0 10px rgba(80,232,144,0.28);}
+.jgSBtn.n{border-color:rgba(212,160,23,0.38);color:#d4a017;}
+.jgSBtn.n:hover{background:rgba(212,160,23,0.18);}
+
+/* Dakshina box */
+.jgDak {
+  background:linear-gradient(135deg,rgba(90,50,0,0.42),rgba(40,20,100,0.78));
+  border:1px solid rgba(255,153,51,0.48); border-radius:13px;
+  padding:15px 16px; text-align:center; animation:jgIn 0.38s ease;
 }
-.jgDakTitle { font-family: 'Cinzel Decorative',cursive; font-size: 0.85rem; color: #ffd700; margin-bottom: 7px; }
-.jgDakText { font-family: 'Noto Serif Bengali',serif; font-size: 0.74rem; color: rgba(248,234,208,0.85); line-height: 1.55; }
-.jgDakBtn {
-  display: inline-block; margin-top: 11px; padding: 8px 22px;
-  background: linear-gradient(135deg, #d4a017, #ff9933);
-  color: #0d0825; border-radius: 20px; border: none; cursor: pointer;
-  font-family: 'Cinzel Decorative',cursive; font-size: 0.68rem; font-weight: 700;
-  letter-spacing: 1.5px; box-shadow: 0 0 14px rgba(212,160,23,0.5);
-  transition: all 0.22s;
+.jgDakT { font-family:'Cinzel Decorative',cursive; font-size:0.88rem; color:#ffd700; margin-bottom:8px; }
+.jgDakP { font-family:'Noto Serif Bengali',serif; font-size:0.73rem; color:rgba(248,234,208,0.82); line-height:1.6; }
+.jgDakB {
+  display:inline-block; margin-top:11px; padding:8px 24px;
+  background:linear-gradient(135deg,#c8950f,#ff9933); color:#080520;
+  border-radius:20px; border:none; cursor:pointer;
+  font-family:'Cinzel Decorative',cursive; font-size:0.68rem; font-weight:700;
+  letter-spacing:1.5px; box-shadow:0 0 14px rgba(212,160,23,0.45);
+  transition:all 0.22s;
 }
-.jgDakBtn:hover { transform: scale(1.06); box-shadow: 0 0 26px rgba(255,153,51,0.75); }
-#jg-bot-area {
-  padding: 9px 12px 13px;
-  background: rgba(10,5,30,0.85);
-  border-top: 1px solid rgba(212,160,23,0.2);
-  flex-shrink: 0;
+.jgDakB:hover{transform:scale(1.06);box-shadow:0 0 26px rgba(255,153,51,0.7);}
+
+/* ── Bottom area ── */
+#jgBot {
+  padding:9px 12px 14px;
+  background:rgba(8,4,28,0.88);
+  border-top:1px solid rgba(212,160,23,0.18);
+  flex-shrink:0;
 }
-.jgChips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+.jgChips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px; }
 .jgChip {
-  padding: 4px 11px;
-  background: rgba(45,24,117,0.38); border: 1px solid rgba(212,160,23,0.28);
-  border-radius: 13px; color: rgba(240,192,64,0.82);
-  font-family: 'Cinzel',serif; font-size: 0.63rem; letter-spacing: 0.5px;
-  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  padding:4px 11px;
+  background:rgba(40,20,105,0.4); border:1px solid rgba(212,160,23,0.25);
+  border-radius:12px; color:rgba(240,192,64,0.8);
+  font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.4px;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
 }
-.jgChip:hover { background: rgba(212,160,23,0.2); border-color: #d4a017; color: #ffd700; }
-.jgInputRow { display: flex; gap: 8px; align-items: flex-end; }
-#jg-inp {
-  flex: 1; background: rgba(0,0,0,0.52); border: 1px solid rgba(212,160,23,0.35);
-  color: #f8ead0; padding: 10px 14px; border-radius: 22px;
-  font-family: 'Noto Serif Bengali',serif; font-size: 0.81rem;
-  outline: none; resize: none; max-height: 100px; line-height: 1.4;
-  transition: border-color 0.3s; overflow-y: auto;
+.jgChip:hover{background:rgba(212,160,23,0.18);border-color:#d4a017;color:#ffd700;}
+.jgIRow { display:flex; gap:8px; align-items:flex-end; }
+#jgInp {
+  flex:1; background:rgba(0,0,0,0.55); border:1px solid rgba(212,160,23,0.32);
+  color:#f8ead0; padding:10px 14px; border-radius:22px;
+  font-family:'Noto Serif Bengali',serif; font-size:0.81rem;
+  outline:none; resize:none; max-height:100px; line-height:1.45;
+  transition:border-color 0.3s; overflow-y:auto;
 }
-#jg-inp::placeholder { color: rgba(212,160,23,0.32); }
-#jg-inp:focus { border-color: rgba(212,160,23,0.72); box-shadow: 0 0 10px rgba(212,160,23,0.14); }
-#jg-snd {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: linear-gradient(135deg, #d4a017, #ff9933);
-  border: none; color: #0d0825; font-size: 15px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; box-shadow: 0 0 12px rgba(212,160,23,0.5);
-  transition: all 0.2s;
+#jgInp::placeholder{color:rgba(212,160,23,0.3);}
+#jgInp:focus{border-color:rgba(212,160,23,0.68);box-shadow:0 0 10px rgba(212,160,23,0.12);}
+#jgSnd {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg,#c8950f,#ff9933);
+  border:none; color:#080520; font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  box-shadow:0 0 12px rgba(212,160,23,0.45); transition:all 0.2s;
 }
-#jg-snd:hover { transform: scale(1.09); box-shadow: 0 0 22px rgba(255,153,51,0.75); }
-#jg-snd:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
-@media(max-width:430px){
-  #jg-window{ width:calc(100vw - 16px); right:8px; bottom:88px; height:calc(100vh - 108px); max-height:none; border-radius:14px; }
-  #jg-fab{ bottom:16px; right:16px; width:56px; height:56px; font-size:24px; }
+#jgSnd:hover{transform:scale(1.1);box-shadow:0 0 22px rgba(255,153,51,0.7);}
+#jgSnd:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+
+@media(max-width:440px){
+  #jgWin{width:calc(100vw - 16px);right:8px;bottom:90px;height:calc(100vh - 110px);max-height:none;border-radius:16px;}
+  #jgFab{bottom:16px;right:16px;width:62px;height:62px;}
+  #jgFab svg{width:62px;height:62px;}
+  #jgBadge{bottom:74px;right:12px;}
 }
 </style>
 
-<!-- FAB -->
-<div id="jg-fab" onclick="jgToggle()" title="জ্যোতিষ গুরু — প্রশ্ন করুন">🪬</div>
+<!-- ═══ FAB: SVG Guru Face ═══ -->
+<button id="jgFab" onclick="jgToggle()" title="জ্যোতিষ গুরু — প্রশ্ন করুন" aria-label="জ্যোতিষ গুরু চ্যাটবট খুলুন">
+<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="jgBg" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#2d1875"/>
+      <stop offset="100%" stop-color="#0d0825"/>
+    </radialGradient>
+    <radialGradient id="jgSkin" cx="50%" cy="40%" r="52%">
+      <stop offset="0%" stop-color="#f5c87a"/>
+      <stop offset="60%" stop-color="#d4913a"/>
+      <stop offset="100%" stop-color="#a0600a"/>
+    </radialGradient>
+    <radialGradient id="jgHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd700" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ff9933" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="jgGlow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Outer ring -->
+  <circle cx="36" cy="36" r="35" fill="url(#jgBg)" stroke="#d4a017" stroke-width="1.5"/>
+  <!-- Halo glow -->
+  <circle cx="36" cy="33" r="22" fill="url(#jgHalo)" opacity="0.7"/>
+  <!-- Robe / shoulders -->
+  <ellipse cx="36" cy="64" rx="22" ry="14" fill="#6b2d00" opacity="0.9"/>
+  <ellipse cx="36" cy="60" rx="18" ry="10" fill="#8b3a00" opacity="0.95"/>
+  <!-- Saffron uttariya -->
+  <path d="M18,56 Q24,46 36,48 Q48,46 54,56 Q48,52 36,54 Q24,52 18,56Z" fill="#ff8c00" opacity="0.9"/>
+  <!-- Neck -->
+  <rect x="31" y="46" width="10" height="8" rx="3" fill="#c87830"/>
+  <!-- Face -->
+  <circle cx="36" cy="38" r="17" fill="url(#jgSkin)"/>
+  <!-- Sacred tilak on forehead -->
+  <rect x="34.5" y="24" width="3" height="8" rx="1.5" fill="#cc1a1a"/>
+  <ellipse cx="36" cy="24" rx="4" ry="2.5" fill="#cc1a1a"/>
+  <ellipse cx="36" cy="24" rx="2" ry="1.2" fill="#ff6666"/>
+  <!-- Eyebrows — thick & wise -->
+  <path d="M27,33 Q30,31 33,32" stroke="#5a3000" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <path d="M39,32 Q42,31 45,33" stroke="#5a3000" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <!-- Eyes — wise, slightly open -->
+  <ellipse cx="30.5" cy="36" rx="3.2" ry="2.2" fill="#1a0a00"/>
+  <ellipse cx="41.5" cy="36" rx="3.2" ry="2.2" fill="#1a0a00"/>
+  <ellipse cx="30.5" cy="36" rx="1.4" ry="1.4" fill="#3a1a00"/>
+  <ellipse cx="41.5" cy="36" rx="1.4" ry="1.4" fill="#3a1a00"/>
+  <!-- Eye shine -->
+  <circle cx="31.5" cy="35.2" r="0.7" fill="white" opacity="0.9"/>
+  <circle cx="42.5" cy="35.2" r="0.7" fill="white" opacity="0.9"/>
+  <!-- Nose -->
+  <path d="M35,37 Q36,40 37,37" stroke="#a06020" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <ellipse cx="34.2" cy="39.5" rx="1.5" ry="0.9" fill="#b06830" opacity="0.6"/>
+  <ellipse cx="37.8" cy="39.5" rx="1.5" ry="0.9" fill="#b06830" opacity="0.6"/>
+  <!-- Mouth — serene smile -->
+  <path d="M31.5,43 Q36,46 40.5,43" stroke="#8b4000" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Beard — wise old sage -->
+  <path d="M22,44 Q24,55 36,58 Q48,55 50,44 Q46,50 36,52 Q26,50 22,44Z" fill="#c8a060" opacity="0.55"/>
+  <path d="M26,42 Q28,50 36,53 Q44,50 46,42 Q42,48 36,50 Q30,48 26,42Z" fill="#d4b070" opacity="0.4"/>
+  <!-- White mustache streaks -->
+  <path d="M30,42 Q33,43.5 36,43 Q39,43.5 42,42" stroke="#e8d090" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <!-- Turban / pagdi -->
+  <path d="M19,32 Q20,18 36,17 Q52,18 53,32 Q48,26 36,25 Q24,26 19,32Z" fill="#cc5500" opacity="0.92"/>
+  <path d="M19,32 Q22,24 36,23 Q50,24 53,32 Q48,28 36,27 Q24,28 19,32Z" fill="#ff7700" opacity="0.7"/>
+  <!-- Turban top knot -->
+  <ellipse cx="36" cy="18" rx="6" ry="3.5" fill="#e06000" opacity="0.9"/>
+  <!-- Gold maang tika -->
+  <circle cx="36" cy="22" r="2.5" fill="#ffd700" filter="url(#jgGlow)"/>
+  <circle cx="36" cy="22" r="1.2" fill="#ff8c00"/>
+  <!-- Ear rings -->
+  <circle cx="19.5" cy="38" r="2.2" fill="none" stroke="#d4a017" stroke-width="1.2" opacity="0.8"/>
+  <circle cx="52.5" cy="38" r="2.2" fill="none" stroke="#d4a017" stroke-width="1.2" opacity="0.8"/>
+  <!-- Rudraksha mala hint at neck -->
+  <path d="M30,48 Q36,50 42,48" stroke="#8b4513" stroke-width="1.5" stroke-dasharray="1.5,1.5" fill="none" opacity="0.7"/>
+</svg>
+</button>
 
-<!-- CHAT WINDOW -->
-<div id="jg-window">
-  <div class="jg-top-bar"></div>
-  <div id="jg-header">
-    <div class="jg-avatar">🔮</div>
-    <div class="jg-hinfo">
-      <div class="jg-name">জ্যোতিষ গুরু</div>
-      <div class="jg-status"><span class="jg-dot"></span>VEDIC ASTROLOGY ORACLE</div>
+<!-- ═══ Tooltip badge ═══ -->
+<div id="jgBadge">🪐 জ্যোতিষ গুরু — জিজ্ঞাসা করুন</div>
+
+<!-- ═══ CHAT WINDOW ═══ -->
+<div id="jgWin">
+  <div class="jgStripe"></div>
+
+  <div id="jgHead">
+    <!-- Header guru face SVG small -->
+    <div class="jgHeadFace">
+      <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+        <defs>
+          <radialGradient id="hSkin" cx="50%" cy="40%" r="52%">
+            <stop offset="0%" stop-color="#f5c87a"/><stop offset="100%" stop-color="#a0600a"/>
+          </radialGradient>
+        </defs>
+        <rect width="52" height="52" fill="#1a0d3a"/>
+        <ellipse cx="26" cy="40" rx="18" ry="14" fill="#6b2d00"/>
+        <path d="M14,38 Q18,32 26,34 Q34,32 38,38 Q34,36 26,37 Q18,36 14,38Z" fill="#ff8c00"/>
+        <circle cx="26" cy="28" r="13" fill="url(#hSkin)"/>
+        <rect x="24.5" y="17" width="3" height="6" rx="1.5" fill="#cc1a1a"/>
+        <ellipse cx="26" cy="17" rx="3.5" ry="2" fill="#cc1a1a"/>
+        <path d="M14,23 Q18,13 26,12 Q34,13 38,23 Q34,18 26,17 Q18,18 14,23Z" fill="#cc5500"/>
+        <ellipse cx="26" cy="13" rx="5" ry="3" fill="#e06000"/>
+        <circle cx="26" cy="16" r="2" fill="#ffd700"/>
+        <ellipse cx="21" cy="26" rx="2.5" ry="1.8" fill="#1a0a00"/>
+        <ellipse cx="31" cy="26" rx="2.5" ry="1.8" fill="#1a0a00"/>
+        <circle cx="21.8" cy="25.4" r="0.6" fill="white"/>
+        <circle cx="31.8" cy="25.4" r="0.6" fill="white"/>
+        <path d="M23,31 Q26,33 29,31" stroke="#8b4000" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M19,32 Q22,38 26,40 Q30,38 33,32 Q30,36 26,37 Q22,36 19,32Z" fill="#c8a060" opacity="0.5"/>
+      </svg>
     </div>
-    <button id="jg-close" onclick="jgToggle()">✕</button>
+    <div class="jgHeadInfo">
+      <div class="jgHName">জ্যোতিষ গুরু</div>
+      <div class="jgHSub">VEDIC ASTROLOGY ORACLE</div>
+      <div class="jgHOnline"><span class="jgGrnDot"></span>প্রস্তুত আছি</div>
+    </div>
+    <button id="jgX" onclick="jgToggle()">✕</button>
   </div>
-  <div id="jg-msgs"></div>
-  <div id="jg-bot-area">
-    <div class="jgChips" id="jg-chips">
+
+  <div id="jgMsgs"></div>
+
+  <div id="jgBot">
+    <div class="jgChips">
       <span class="jgChip" onclick="jgChip(this)">🪐 আমার রাশি কী?</span>
       <span class="jgChip" onclick="jgChip(this)">💎 শুভ রত্নপাথর</span>
       <span class="jgChip" onclick="jgChip(this)">⭐ নক্ষত্র ফল</span>
@@ -4500,181 +4626,203 @@ function selectAmt(el, amt) {
       <span class="jgChip" onclick="jgChip(this)">💑 বিবাহ যোগ</span>
       <span class="jgChip" onclick="jgChip(this)">🌙 চন্দ্র দশা</span>
     </div>
-    <div class="jgInputRow">
-      <textarea id="jg-inp" placeholder="জ্যোতিষ বিষয়ে যেকোনো প্রশ্ন করুন..." rows="1"
+    <div class="jgIRow">
+      <textarea id="jgInp" placeholder="যেকোনো জ্যোতিষ প্রশ্ন করুন..." rows="1"
         onkeydown="jgKey(event)" oninput="jgResize(this)"></textarea>
-      <button id="jg-snd" onclick="jgSend()">➤</button>
+      <button id="jgSnd" onclick="jgSend()">➤</button>
     </div>
   </div>
 </div>
 
 <script>
 (function(){
-  const GEMINI_KEY = 'AIzaSyBcc2XaKabjP7aVU0KJPoJkLxFvveNRMzM';
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+  const KEY='AIzaSyBcc2XaKabjP7aVU0KJPoJkLxFvveNRMzM';
+  const URL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
 
-  const SYSTEM = `তুমি "জ্যোতিষ গুরু" — একজন অত্যন্ত অভিজ্ঞ ও জ্ঞানী বৈদিক জ্যোতিষাচার্য। তোমার জ্ঞান অপরিসীম।
+  // System prompt injected as first user+model turn (works universally with Gemini)
+  const SYS_USER=`তুমি "জ্যোতিষ গুরু" — একজন অত্যন্ত অভিজ্ঞ বৈদিক জ্যোতিষাচার্য। এখন থেকে তুমি শুধু এই চরিত্রে কথা বলবে।
 
-পরিচয়: তুমি একজন সিদ্ধহস্ত বৈদিক জ্যোতিষী। তোমার জ্ঞান: জন্মকুণ্ডলী, রাশি, নক্ষত্র, গ্রহ, দশা, অন্তর্দশা, যোগ, দোষ, রত্নপাথর, মুহূর্ত, বাস্তু, প্রশ্নকুণ্ডলী, আয়নাংশ, লগ্ন, ষোডশবর্গ, নবমাংশ, কালসর্প দোষ, মাঙ্গলিক দোষ, গ্রহ শান্তি, উপায়, পূজা, রুদ্রাক্ষ, পাণিগ্রহণ মুহূর্ত ইত্যাদি সমস্ত বৈদিক জ্যোতিষ বিষয়ে।
+তোমার জ্ঞান: জন্মকুণ্ডলী, রাশি চক্র, নক্ষত্র, নবগ্রহ, বিংশোত্তরী দশা, অন্তর্দশা, যোগ, দোষ (কালসর্প, মাঙ্গলিক, পিতৃদোষ), রত্নপাথর, মুহূর্ত, বাস্তুশাস্ত্র, প্রশ্নকুণ্ডলী, লগ্ন, ষোডশবর্গ, নবমাংশ, গ্রহ শান্তি পূজা, রুদ্রাক্ষ, উপায়।
 
-ভাষা নীতি: ব্যবহারকারী যে ভাষায় কথা বলবে, তুমিও সেই ভাষায় উত্তর দেবে। বাংলা, হিন্দি, তামিল, তেলুগু, মারাঠি, গুজরাটি, কন্নড, মালয়ালম, পাঞ্জাবি, ইংরেজি — সব ভাষায় পারদর্শী। উত্তরে মাঝে মাঝে সংস্কৃত শ্লোক দিতে পারো।
+ভাষা: ব্যবহারকারী যে ভাষায় লিখবে সেই ভাষায় উত্তর দেবে। বাংলা, হিন্দি, তামিল, তেলুগু, মারাঠি, গুজরাটি, কন্নড, মালয়ালম, পাঞ্জাবি, ইংরেজি — সব জানো। মাঝে মাঝে সংস্কৃত শ্লোক উদ্ধৃত করে অনুবাদ দাও।
 
-শৈলী: গুরুগম্ভীর, জ্ঞানগর্ভ কিন্তু সহজবোধ্য। উত্তরের শুরুতে "🙏 ওঁ" বা মঙ্গলবাচক শব্দ দাও। গ্রহ, নক্ষত্র বা রাশির প্রভাব উল্লেখ করো। সম্ভব হলে ব্যবহারিক উপায় বা প্রতিকার দাও।
+শৈলী: গুরুগম্ভীর ও জ্ঞানগর্ভ কিন্তু সহজবোধ্য। প্রতিটি উত্তরের শুরুতে "🙏 ওঁ" বা মঙ্গলবাচন। গ্রহের প্রভাব ও ব্যবহারিক প্রতিকার দাও। কুণ্ডলী-নির্ভর প্রশ্নে জন্মতারিখ/সময়/স্থান চাও।
 
-কঠোর নিয়ম: শুধুমাত্র জ্যোতিষ, মুহূর্ত, বাস্তু, ধর্মীয় আচার বিষয়ে উত্তর দেবে। ক্রিকেট, রাজনীতি, সিনেমা, প্রযুক্তি, শেয়ার বাজার বা অন্য বিষয়ে প্রশ্ন করলে বিনয়ের সাথে বলো: "প্রিয় জিজ্ঞাসু, এই বিষয়ে আমার জ্ঞান সীমাবদ্ধ। আমি কেবল বৈদিক জ্যোতিষের আলোকে পথ দেখাতে সক্ষম। 🙏" চিকিৎসা পরামর্শ দেবে না। ভবিষ্যৎ ১০০% নিশ্চিত করে বলবে না, সম্ভাবনা ও গ্রহের সংকেত বলবে।`;
+কঠোর নিয়ম: শুধু জ্যোতিষ, বাস্তু, মুহূর্ত, ধর্মীয় আচার — এই বিষয়গুলিতেই উত্তর দেবে। ক্রিকেট, রাজনীতি, সিনেমা, প্রযুক্তি বা অন্য কোনো বিষয়ে জিজ্ঞেস করলে বিনয়ের সাথে বলবে: "প্রিয় জিজ্ঞাসু, এই বিষয় আমার জ্ঞানের বাইরে। আমি কেবল বৈদিক জ্যোতিষের আলোকে পথ দেখাতে পারি। 🙏" ভবিষ্যৎ ১০০% নিশ্চিত করে বলবে না।
 
-  let isOpen=false, busy=false, satWait=false;
-  let history=[], msgCount=0, botCount=0;
+তুমি কি এই নিয়মগুলি বুঝেছ?`;
+  const SYS_MODEL=`🙏 ওঁ নমঃ শিবায়।\n\nহ্যাঁ, আমি সম্পূর্ণরূপে বুঝেছি। আমি জ্যোতিষ গুরু — একজন বৈদিক জ্যোতিষাচার্য। আমি শুধুমাত্র জ্যোতিষ, বাস্তু, মুহূর্ত ও ধর্মীয় বিষয়ে জ্ঞান দেব। প্রস্তুত আছি। 🪐`;
 
+  let open=false, busy=false, satWait=false, botCount=0;
+  // Always keep system context as first 2 turns
+  const BASE=[
+    {role:'user',   parts:[{text:SYS_USER}]},
+    {role:'model',  parts:[{text:SYS_MODEL}]}
+  ];
+  let hist=[...BASE];
+
+  // Hide badge after first open
   window.jgToggle=function(){
-    isOpen=!isOpen;
-    document.getElementById('jg-window').classList.toggle('jgOpen',isOpen);
-    if(isOpen && msgCount===0) setTimeout(welcome,320);
+    open=!open;
+    document.getElementById('jgWin').classList.toggle('on',open);
+    document.getElementById('jgBadge').classList.add('hide');
+    if(open && botCount===0) setTimeout(welcome,330);
   };
 
   function welcome(){
-    bot(`🙏 **ওঁ নমো ভগবতে**\n\nআমি **জ্যোতিষ গুরু** — এই দিব্য জ্যোতিষ জগতে আপনাকে স্বাগত। রাশি, কুণ্ডলী, গ্রহদশা, রত্নপাথর, বিবাহ যোগ — যেকোনো প্রশ্ন করুন। আমি যেকোনো ভারতীয় ভাষায় উত্তর দিতে সক্ষম। 🪐✨`);
+    addBot(`🙏 **ওঁ নমো ভগবতে বাসুদেবায়**\n\nআমি **জ্যোতিষ গুরু** — বৈদিক জ্যোতিষের এই দিব্য জগতে আপনাকে সাদর স্বাগত জানাই।\n\nরাশি • কুণ্ডলী • গ্রহদশা • রত্নপাথর • বিবাহ যোগ — যেকোনো প্রশ্ন করুন। আমি বাংলা, হিন্দি সহ সব ভারতীয় ভাষায় উত্তর দিতে পারি। 🪐✨`);
   }
 
-  window.jgResize=function(el){
-    el.style.height='auto';
-    el.style.height=Math.min(el.scrollHeight,100)+'px';
-  };
-  window.jgKey=function(e){
-    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();jgSend();}
-  };
+  window.jgResize=function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';};
+  window.jgKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();jgSend();}};
   window.jgChip=function(el){
-    document.getElementById('jg-inp').value=el.textContent.replace(/^[🪐💎⭐🔴💑🌙]\s/,'');
+    document.getElementById('jgInp').value=el.textContent.replace(/^[^0980-09FF0900-097F0041-007Aa-z]+/,'').trim();
     jgSend();
   };
 
   window.jgSend=async function(){
-    const inp=document.getElementById('jg-inp');
+    const inp=document.getElementById('jgInp');
     const txt=inp.value.trim();
     if(!txt||busy||satWait) return;
     inp.value=''; inp.style.height='auto';
-    user(txt);
-    history.push({role:'user',parts:[{text:txt}]});
-    msgCount++;
-    await callGemini();
+    addUser(txt);
+    hist.push({role:'user',parts:[{text:txt}]});
+    await callAI();
   };
 
-  function user(t){
-    const el=document.createElement('div');
-    el.className='jgM u';
-    el.innerHTML=`<div class="jgBub">${esc(t)}</div><div class="jgMico">🙋</div>`;
-    app(el);
+  function addUser(t){
+    const d=document.createElement('div');
+    d.className='jgRow u';
+    d.innerHTML=`<div class="jgBub">${esc(t)}</div><div class="jgAv" style="overflow:hidden;background:linear-gradient(135deg,#4c1d95,#2e1065);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="13" r="6.5" fill="#c4b5fd"/><ellipse cx="16" cy="27" rx="10" ry="7" fill="#7c3aed"/></svg></div>`;
+    push(d);
   }
 
-  function bot(t){
-    const el=document.createElement('div');
-    el.className='jgM b';
-    el.innerHTML=`<div class="jgMico">🔮</div><div class="jgBub">${fmt(t)}</div>`;
-    app(el); msgCount++; botCount++;
+  function addBot(t){
+    const d=document.createElement('div');
+    d.className='jgRow b';
+    d.innerHTML=`<div class="jgAv">${guruFaceSmall()}</div><div class="jgBub">${fmt(t)}</div>`;
+    push(d); botCount++;
   }
 
-  async function callGemini(){
+  function guruFaceSmall(){
+    return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="display:block">
+      <defs><radialGradient id="gS2" cx="50%" cy="40%" r="52%"><stop offset="0%" stop-color="#f5c87a"/><stop offset="100%" stop-color="#a0600a"/></radialGradient></defs>
+      <rect width="52" height="52" rx="26" fill="#1a0d3a"/>
+      <ellipse cx="26" cy="40" rx="18" ry="14" fill="#6b2d00"/>
+      <path d="M14,38 Q18,32 26,34 Q34,32 38,38 Q34,36 26,37 Q18,36 14,38Z" fill="#ff8c00"/>
+      <circle cx="26" cy="28" r="13" fill="url(#gS2)"/>
+      <rect x="24.5" y="17" width="3" height="6" rx="1.5" fill="#cc1a1a"/>
+      <ellipse cx="26" cy="17" rx="3.5" ry="2" fill="#cc1a1a"/>
+      <path d="M14,23 Q18,13 26,12 Q34,13 38,23 Q34,18 26,17 Q18,18 14,23Z" fill="#cc5500"/>
+      <ellipse cx="26" cy="13" rx="5" ry="3" fill="#e06000"/>
+      <circle cx="26" cy="16" r="2" fill="#ffd700"/>
+      <ellipse cx="21" cy="26" rx="2.5" ry="1.8" fill="#1a0a00"/>
+      <ellipse cx="31" cy="26" rx="2.5" ry="1.8" fill="#1a0a00"/>
+      <circle cx="21.8" cy="25.4" r="0.6" fill="white"/>
+      <circle cx="31.8" cy="25.4" r="0.6" fill="white"/>
+      <path d="M23,31 Q26,33 29,31" stroke="#8b4000" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M19,32 Q22,38 26,40 Q30,38 33,32 Q30,36 26,37 Q22,36 19,32Z" fill="#c8a060" opacity="0.5"/>
+    </svg>`;
+  }
+
+  async function callAI(){
     busy=true;
-    document.getElementById('jg-snd').disabled=true;
-
-    // typing indicator
-    const trow=document.createElement('div');
-    trow.className='jgM b'; trow.id='jgTypRow';
-    trow.innerHTML=`<div class="jgMico">🔮</div><div class="jgTyp"><span class="jgTd"></span><span class="jgTd"></span><span class="jgTd"></span></div>`;
-    app(trow);
+    document.getElementById('jgSnd').disabled=true;
+    // typing row
+    const tr=document.createElement('div');
+    tr.className='jgRow b'; tr.id='jgTR';
+    tr.innerHTML=`<div class="jgAv">${guruFaceSmall()}</div><div class="jgTyping"><span class="jgDt"></span><span class="jgDt"></span><span class="jgDt"></span></div>`;
+    push(tr);
 
     try{
-      const body={
-        system_instruction:{parts:[{text:SYSTEM}]},
-        contents: history,
-        generationConfig:{maxOutputTokens:900,temperature:0.7}
-      };
-      const res=await fetch(GEMINI_URL,{
+      const res=await fetch(URL,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(body)
+        body:JSON.stringify({
+          contents:hist,
+          generationConfig:{maxOutputTokens:1000,temperature:0.75,topP:0.9}
+        })
       });
-      const data=await res.json();
-      document.getElementById('jgTypRow')?.remove();
+      const d=await res.json();
+      document.getElementById('jgTR')?.remove();
 
-      if(data.candidates&&data.candidates[0]){
-        const reply=data.candidates[0].content.parts[0].text;
-        history.push({role:'model',parts:[{text:reply}]});
-        bot(reply);
-        if(botCount>0 && botCount%2===0) setTimeout(showSat,700);
+      if(d.candidates&&d.candidates[0]&&d.candidates[0].content){
+        const reply=d.candidates[0].content.parts[0].text;
+        hist.push({role:'model',parts:[{text:reply}]});
+        addBot(reply);
+        if(botCount%2===0) setTimeout(showSat,700);
       } else {
-        bot('🙏 ক্ষমা করুন, এই মুহূর্তে সংযোগে সমস্যা হচ্ছে। একটু পরে আবার চেষ্টা করুন।');
+        const err=d.error?.message||'অজানা সমস্যা';
+        addBot(`🙏 দুঃখিত, একটু সমস্যা হচ্ছে। ${err.includes('API_KEY')?'API Key পরীক্ষা করুন।':'একটু পরে আবার চেষ্টা করুন।'}`);
       }
     }catch(e){
-      document.getElementById('jgTypRow')?.remove();
-      bot('⚠️ গুরুজি এই মুহূর্তে ধ্যানমগ্ন। পুনরায় চেষ্টা করুন।');
+      document.getElementById('jgTR')?.remove();
+      addBot('🙏 সংযোগ সমস্যা হচ্ছে। এই chatbot শুধু **Vercel-এ deploy** করার পরে কাজ করবে — local file থেকে run করলে browser CORS block করে। GitHub-এ push করুন, Vercel auto-deploy করবে। ✅');
     }
     busy=false;
-    document.getElementById('jg-snd').disabled=false;
+    document.getElementById('jgSnd').disabled=false;
   }
 
   function showSat(){
     satWait=true;
     const el=document.createElement('div');
-    el.className='jgSatBox'; el.id='jgSat';
+    el.className='jgSat'; el.id='jgSatEl';
     el.innerHTML=`🌟 গুরুজির পরামর্শে কি আপনি সন্তুষ্ট হয়েছেন?
-      <div class="jgSatBtns">
-        <button class="jgSatBtn y" onclick="jgSatAns(true)">✅ হ্যাঁ, সন্তুষ্ট</button>
-        <button class="jgSatBtn n" onclick="jgSatAns(false)">🔄 আরো জানতে চাই</button>
+      <div class="jgSBtns">
+        <button class="jgSBtn y" onclick="jgSatYes()">✅ হ্যাঁ, সন্তুষ্ট</button>
+        <button class="jgSBtn n" onclick="jgSatNo()">🔄 আরো জানতে চাই</button>
       </div>`;
-    app(el);
+    push(el);
   }
 
-  window.jgSatAns=function(yes){
-    document.getElementById('jgSat')?.remove();
+  window.jgSatYes=function(){
+    document.getElementById('jgSatEl')?.remove();
     satWait=false;
-    if(yes){ showDak(); }
-    else { bot('🙏 নিশ্চয়ই! আপনার যা জানার আছে নির্দ্বিধায় জিজ্ঞাসা করুন। আমি সর্বদা প্রস্তুত। 🌟'); }
+    showDak();
+  };
+  window.jgSatNo=function(){
+    document.getElementById('jgSatEl')?.remove();
+    satWait=false;
+    addBot('🙏 নিশ্চয়ই! আপনার মনের যা প্রশ্ন আছে, নির্দ্বিধায় জিজ্ঞাসা করুন। গুরুজি সর্বদা আপনার সেবায় প্রস্তুত। 🌟');
   };
 
   function showDak(){
     const el=document.createElement('div');
-    el.className='jgDakBox';
-    el.innerHTML=`<div class="jgDakTitle">🙏 দক্ষিণা নিবেদন</div>
-      <div class="jgDakText">গুরুজির সেবায় সন্তুষ্ট হয়েছেন জেনে আনন্দিত। আপনি ইচ্ছা করলে এই অ্যাপটির উন্নয়নে Developer-কে দক্ষিণা প্রদান করে সহায়তা করতে পারেন।</div>
-      <button class="jgDakBtn" onclick="jgDak()">💛 দক্ষিণা দিন</button>`;
-    app(el);
+    el.className='jgDak';
+    el.innerHTML=`<div class="jgDakT">🙏 গুরু দক্ষিণা</div>
+      <div class="jgDakP">আপনার সন্তুষ্টিই আমার পুরস্কার। আপনি ইচ্ছা করলে এই অ্যাপের উন্নয়নে Developer-কে দক্ষিণা দিয়ে সহায়তা করতে পারেন।</div>
+      <button class="jgDakB" onclick="jgDakOpen()">💛 দক্ষিণা দিন</button>`;
+    push(el);
   }
 
-  window.jgDak=function(){
-    // find and click the Support/Developer nav tab
+  window.jgDakOpen=function(){
     let found=false;
-    document.querySelectorAll('.nav-tab').forEach(tab=>{
-      const t=tab.textContent.toLowerCase();
-      if(t.includes('support')||t.includes('developer')||t.includes('দক্ষিণা')||t.includes('donate')){
-        tab.click(); found=true;
+    document.querySelectorAll('.nav-tab').forEach(t=>{
+      const tx=t.textContent.toLowerCase();
+      if(tx.includes('support')||tx.includes('developer')||tx.includes('donate')||tx.includes('দক্ষিণা')){
+        t.click(); found=true;
       }
     });
-    if(!found){
-      // try showSection function from main app
-      if(typeof showSection==='function') showSection('support');
-    }
+    if(!found && typeof showSection==='function') showSection('support');
     jgToggle();
   };
 
-  function app(el){
-    const box=document.getElementById('jg-msgs');
-    box.appendChild(el);
-    box.scrollTop=box.scrollHeight;
+  function push(el){
+    const b=document.getElementById('jgMsgs');
+    b.appendChild(el); b.scrollTop=b.scrollHeight;
   }
-
   function fmt(t){
     return esc(t)
-      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ffd700">$1</strong>')
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ffd700;font-weight:700">$1</strong>')
       .replace(/\*(.*?)\*/g,'<em style="color:#f0c040">$1</em>')
       .replace(/\n/g,'<br>');
   }
   function esc(t){
-    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 })();
 </script>
-<!-- ████ END JYOTISH GURU CHATBOT ████ -->
+<!-- ████ END JYOTISH GURU CHATBOT v3 ████ -->
 
 </body>
 </html>
